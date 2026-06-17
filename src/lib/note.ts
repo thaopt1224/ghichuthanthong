@@ -1,0 +1,22 @@
+import { isCategoryId } from './categories'
+import type { Note } from '../types/note'
+
+export function normalizeNote(id: string, data: Record<string, unknown>): Note {
+  const category = typeof data.category === 'string' && isCategoryId(data.category)
+    ? data.category
+    : ''
+
+  return {
+    id,
+    title: String(data.title ?? ''),
+    content: String(data.content ?? ''),
+    url: String(data.url ?? ''),
+    category,
+    subcategory: String(data.subcategory ?? ''),
+    hashtags: Array.isArray(data.hashtags)
+      ? data.hashtags.map((tag) => String(tag).toLowerCase())
+      : [],
+    createdAt: Number(data.createdAt ?? 0),
+    updatedAt: Number(data.updatedAt ?? 0),
+  }
+}
