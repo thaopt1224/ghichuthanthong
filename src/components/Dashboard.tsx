@@ -4,6 +4,7 @@ import { useNotes } from '../hooks/useNotes'
 import { useAuth } from '../hooks/useAuth'
 import { CATEGORIES, type CategoryId } from '../lib/categories'
 import { filterNotes } from '../lib/search'
+import { noteToCloneDraft } from '../lib/note'
 import type { Note, NoteInput } from '../types/note'
 import { FilterBar } from './FilterBar'
 import { Logo } from './Logo'
@@ -19,6 +20,7 @@ export function Dashboard({ user }: { user: User }) {
   const [hashtag, setHashtag] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
+  const [cloneDraft, setCloneDraft] = useState<NoteInput | null>(null)
 
   const subcategoryOptions = useMemo(() => {
     if (!category) return []
@@ -55,17 +57,26 @@ export function Dashboard({ user }: { user: User }) {
 
   const openCreate = () => {
     setEditingNote(null)
+    setCloneDraft(null)
     setModalOpen(true)
   }
 
   const openEdit = (note: Note) => {
     setEditingNote(note)
+    setCloneDraft(null)
+    setModalOpen(true)
+  }
+
+  const openClone = (note: Note) => {
+    setEditingNote(null)
+    setCloneDraft(noteToCloneDraft(note))
     setModalOpen(true)
   }
 
   const closeModal = () => {
     setModalOpen(false)
     setEditingNote(null)
+    setCloneDraft(null)
   }
 
   const handleSave = async (input: NoteInput) => {
@@ -158,6 +169,7 @@ export function Dashboard({ user }: { user: User }) {
                 key={note.id}
                 note={note}
                 onEdit={openEdit}
+                onClone={openClone}
                 onDelete={removeNote}
                 onHashtagClick={setHashtag}
               />
@@ -169,6 +181,7 @@ export function Dashboard({ user }: { user: User }) {
       {modalOpen && (
         <NoteFormModal
           note={editingNote}
+          draft={cloneDraft}
           onClose={closeModal}
           onSave={handleSave}
         />

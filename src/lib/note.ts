@@ -1,5 +1,5 @@
 import { isCategoryId } from './categories'
-import type { Note } from '../types/note'
+import type { Note, NoteInput } from '../types/note'
 
 export function normalizeNote(id: string, data: Record<string, unknown>): Note {
   const category = typeof data.category === 'string' && isCategoryId(data.category)
@@ -18,5 +18,16 @@ export function normalizeNote(id: string, data: Record<string, unknown>): Note {
       : [],
     createdAt: Number(data.createdAt ?? 0),
     updatedAt: Number(data.updatedAt ?? 0),
+  }
+}
+
+export function noteToCloneDraft(note: Note): NoteInput {
+  return {
+    title: `${note.title} (bản sao)`,
+    content: note.content,
+    url: note.url,
+    category: note.category,
+    subcategory: note.subcategory,
+    hashtags: [...note.hashtags],
   }
 }

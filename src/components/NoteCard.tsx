@@ -4,6 +4,7 @@ import type { Note } from '../types/note'
 interface NoteCardProps {
   note: Note
   onEdit: (note: Note) => void
+  onClone: (note: Note) => void
   onDelete: (id: string) => void
   onHashtagClick?: (tag: string) => void
 }
@@ -16,7 +17,7 @@ function formatDate(timestamp: number): string {
   })
 }
 
-export function NoteCard({ note, onEdit, onDelete, onHashtagClick }: NoteCardProps) {
+export function NoteCard({ note, onEdit, onClone, onDelete, onHashtagClick }: NoteCardProps) {
   const handleDelete = () => {
     if (window.confirm('Xoá ghi chú này?')) {
       onDelete(note.id)
@@ -66,6 +67,9 @@ export function NoteCard({ note, onEdit, onDelete, onHashtagClick }: NoteCardPro
       <div className="note-actions">
         <button type="button" className="btn btn-ghost" onClick={() => onEdit(note)}>
           Sửa
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={() => onClone(note)}>
+          Nhân bản
         </button>
         <button type="button" className="btn btn-danger" onClick={handleDelete}>
           Xoá

@@ -9,6 +9,7 @@ import type { Note, NoteInput } from '../types/note'
 
 interface NoteFormModalProps {
   note?: Note | null
+  draft?: NoteInput | null
   onClose: () => void
   onSave: (input: NoteInput) => Promise<void>
 }
@@ -22,7 +23,7 @@ const emptyForm: NoteInput = {
   hashtags: [],
 }
 
-export function NoteFormModal({ note, onClose, onSave }: NoteFormModalProps) {
+export function NoteFormModal({ note, draft, onClose, onSave }: NoteFormModalProps) {
   const [form, setForm] = useState<NoteInput>(emptyForm)
   const [hashtagInput, setHashtagInput] = useState('')
   const [saving, setSaving] = useState(false)
@@ -43,11 +44,14 @@ export function NoteFormModal({ note, onClose, onSave }: NoteFormModalProps) {
         hashtags: note.hashtags,
       })
       setHashtagInput(formatHashtags(note.hashtags))
+    } else if (draft) {
+      setForm(draft)
+      setHashtagInput(formatHashtags(draft.hashtags))
     } else {
       setForm(emptyForm)
       setHashtagInput('')
     }
-  }, [note])
+  }, [note, draft])
 
   const handleCategoryChange = (category: CategoryId | '') => {
     const subcategory = category ? CATEGORIES[category].subcategories[0] : ''
@@ -74,7 +78,7 @@ export function NoteFormModal({ note, onClose, onSave }: NoteFormModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>{note ? 'Sửa ghi chú' : 'Ghi chú mới'}</h2>
+        <h2>{note ? 'Sửa ghi chú' : draft ? 'Nhân bản ghi chú' : 'Ghi chú mới'}</h2>
         <form onSubmit={handleSubmit}>
           {error && <p className="error-msg">{error}</p>}
 
