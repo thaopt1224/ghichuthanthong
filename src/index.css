@@ -524,7 +524,13 @@ a {
   margin: 0 0 0.75rem;
   font-size: 0.9rem;
   color: var(--text-muted);
-  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: break-word;
 }
 
 .note-link {
