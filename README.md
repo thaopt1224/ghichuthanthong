@@ -70,10 +70,54 @@ notes/{noteId}
 - Firebase Auth + Firestore
 - Fuse.js (tìm kiếm mờ + xử lý câu hỏi tự nhiên phía client)
 
+## Deploy miễn phí (Firebase Hosting)
+
+App đã dùng Firebase → **Firebase Hosting** là cách đơn giản nhất, **không cần mua host**.
+
+URL miễn phí dạng: `https://ghi-chu-than-thong.web.app`
+
+### Bước 1 — Cài Firebase CLI (một lần)
+
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+### Bước 2 — Bật Hosting trên Console
+
+1. [Firebase Console](https://console.firebase.google.com/) → project **ghi-chu-than-thong**
+2. **Build** → **Hosting** → **Get started**
+
+### Bước 3 — Deploy
+
+Đảm bảo file `.env` đã có config đúng (Vite nhúng config lúc build):
+
+```bash
+npm run deploy
+```
+
+Lần đầu có thể hỏi project — chọn **ghi-chu-than-thong**.
+
+### Bước 4 — Cho phép đăng nhập trên domain public
+
+Firebase Console → **Authentication** → **Settings** → **Authorized domains**
+
+Domain `ghi-chu-than-thong.web.app` thường được thêm tự động sau khi deploy Hosting. Nếu đăng nhập báo lỗi domain, thêm tay domain đó vào danh sách.
+
+---
+
+## Các lựa chọn miễn phí khác
+
+| Nền tảng | Ưu điểm |
+|----------|---------|
+| **Firebase Hosting** | Cùng project với Auth/Firestore, deploy 1 lệnh |
+| **[Vercel](https://vercel.com)** | Kết nối GitHub, tự deploy mỗi lần push |
+| **[Netlify](https://netlify.com)** | Tương tự Vercel, kéo thả folder `dist` |
+
+Với Vercel/Netlify: build command `npm run build`, output folder `dist`, thêm biến môi trường `VITE_FIREBASE_*` giống file `.env`.
+
 ## Build production
 
 ```bash
 npm run build
 ```
-
-Deploy thư mục `dist/` lên Vercel, Netlify, hoặc Firebase Hosting.
