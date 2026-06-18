@@ -1,4 +1,5 @@
 import { getCategoryLabel } from '../lib/categories'
+import { useCategoriesContext } from '../contexts/CategoriesContext'
 import type { Note } from '../types/note'
 
 interface NoteCardProps {
@@ -18,6 +19,7 @@ function formatDate(timestamp: number): string {
 }
 
 export function NoteCard({ note, onEdit, onClone, onDelete, onHashtagClick }: NoteCardProps) {
+  const { categories } = useCategoriesContext()
   const handleDelete = () => {
     if (window.confirm('Xoá ghi chú này?')) {
       onDelete(note.id)
@@ -38,7 +40,9 @@ export function NoteCard({ note, onEdit, onClone, onDelete, onHashtagClick }: No
       {hasMeta && (
         <div className="note-meta">
           {note.category && (
-            <span className="badge badge-category">{getCategoryLabel(note.category)}</span>
+            <span className="badge badge-category">
+              {getCategoryLabel(note.category, categories)}
+            </span>
           )}
           {note.subcategory && (
             <span className="badge badge-subcategory">{note.subcategory}</span>

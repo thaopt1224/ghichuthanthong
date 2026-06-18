@@ -1,15 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import {
-  CATEGORIES,
-  CATEGORY_IDS,
-  type CategoryId,
-} from '../lib/categories'
+import { getSubcategories } from '../lib/categories'
 import { formatHashtags, parseHashtags } from '../lib/hashtags'
+import type { CategoriesMap } from '../types/category'
 import type { Note, NoteInput } from '../types/note'
 
 interface NoteFormModalProps {
   note?: Note | null
   draft?: NoteInput | null
+  categories: CategoriesMap
+  categoryIds: string[]
   onClose: () => void
   onSave: (input: NoteInput) => Promise<void>
 }
@@ -23,14 +22,21 @@ const emptyForm: NoteInput = {
   hashtags: [],
 }
 
-export function NoteFormModal({ note, draft, onClose, onSave }: NoteFormModalProps) {
+export function NoteFormModal({
+  note,
+  draft,
+  categories,
+  categoryIds,
+  onClose,
+  onSave,
+}: NoteFormModalProps) {
   const [form, setForm] = useState<NoteInput>(emptyForm)
   const [hashtagInput, setHashtagInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const subcategories = form.category
-    ? CATEGORIES[form.category].subcategories
+    ? getSubcategories(form.category, categories)
     : []
 
   useEffect(() => {
@@ -53,8 +59,9 @@ export function NoteFormModal({ note, draft, onClose, onSave }: NoteFormModalPro
     }
   }, [note, draft])
 
-  const handleCategoryChange = (category: CategoryId | '') => {
-    const subcategory = category ? CATEGORIES[category].subcategories[0] : ''
+  const handleCategoryChange = (category: string) => {
+    const subs = category ? getSubcategories(category, categories) : []
+    const subcategory = subs[0] ?? ''
     setForm({ ...form, category, subcategory })
   }
 
@@ -88,12 +95,12 @@ export function NoteFormModal({ note, draft, onClose, onSave }: NoteFormModalPro
               <select
                 id="category"
                 value={form.category}
-                onChange={(e) => handleCategoryChange(e.target.value as CategoryId | '')}
+                onChange={(e) => handleCategoryChange(e.target.value)}
               >
                 <option value="">— Chọn —</option>
-                {CATEGORY_IDS.map((id) => (
+                {categoryIds.map((id) => (
                   <option key={id} value={id}>
-                    {CATEGORIES[id].label}
+                    {categories[id].label}
                   </option>
                 ))}
               </select>

@@ -1,13 +1,14 @@
-import type { CategoryId } from '../lib/categories'
-import { CATEGORIES, CATEGORY_IDS } from '../lib/categories'
+import type { CategoriesMap } from '../types/category'
 
 interface FilterBarProps {
-  category: CategoryId | ''
+  category: string
   subcategory: string
   hashtag: string
+  categoryIds: string[]
+  categories: CategoriesMap
   subcategoryOptions: string[]
   hashtagOptions: string[]
-  onCategoryChange: (category: CategoryId | '') => void
+  onCategoryChange: (category: string) => void
   onSubcategoryChange: (subcategory: string) => void
   onHashtagChange: (hashtag: string) => void
   onClear: () => void
@@ -17,6 +18,8 @@ export function FilterBar({
   category,
   subcategory,
   hashtag,
+  categoryIds,
+  categories,
   subcategoryOptions,
   hashtagOptions,
   onCategoryChange,
@@ -38,14 +41,14 @@ export function FilterBar({
           >
             Tất cả
           </button>
-          {CATEGORY_IDS.map((id) => (
+          {categoryIds.map((id) => (
             <button
               key={id}
               type="button"
               className={`filter-chip${category === id ? ' active' : ''}`}
               onClick={() => onCategoryChange(id)}
             >
-              {CATEGORIES[id].label}
+              {categories[id].label}
             </button>
           ))}
         </div>

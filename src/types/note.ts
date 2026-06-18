@@ -1,11 +1,9 @@
-import type { CategoryId } from '../lib/categories'
-
 export interface Note {
   id: string
   title: string
   content: string
   url: string
-  category: CategoryId | ''
+  category: string
   subcategory: string
   hashtags: string[]
   createdAt: number

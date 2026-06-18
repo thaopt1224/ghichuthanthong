@@ -3,6 +3,7 @@ import { isFirebaseConfigured } from './lib/firebase'
 import { AuthPage } from './components/AuthPage'
 import { Dashboard } from './components/Dashboard'
 import { SetupPage } from './components/SetupPage'
+import { CategoriesProvider } from './contexts/CategoriesContext'
 
 export default function App() {
   if (!isFirebaseConfigured()) {
@@ -27,5 +28,9 @@ function AppWithAuth() {
     return <AuthPage />
   }
 
-  return <Dashboard user={user} />
+  return (
+    <CategoriesProvider>
+      <Dashboard user={user} />
+    </CategoriesProvider>
+  )
 }

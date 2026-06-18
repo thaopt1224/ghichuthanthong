@@ -10,5 +10,10 @@ service cloud.firestore {
         && request.resource.data.title is string
         && request.resource.data.hashtags is list;
     }
+
+    match /categories/{categoryId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
   }
 }

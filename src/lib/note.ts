@@ -1,10 +1,7 @@
-import { isCategoryId } from './categories'
 import type { Note, NoteInput } from '../types/note'
 
 export function normalizeNote(id: string, data: Record<string, unknown>): Note {
-  const category = typeof data.category === 'string' && isCategoryId(data.category)
-    ? data.category
-    : ''
+  const category = typeof data.category === 'string' ? data.category : ''
 
   return {
     id,

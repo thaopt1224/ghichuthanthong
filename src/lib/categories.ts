@@ -1,36 +1,40 @@
-export type CategoryId = 'phim' | 'truyen' | 'game' | 'khac'
+import type { CategoriesMap } from '../types/category'
 
-export interface CategoryConfig {
-  label: string
-  subcategories: string[]
+export function getCategoryIds(categories: CategoriesMap): string[] {
+  return Object.keys(categories).sort((a, b) => {
+    const orderA = categories[a].order ?? Number.MAX_SAFE_INTEGER
+    const orderB = categories[b].order ?? Number.MAX_SAFE_INTEGER
+    if (orderA !== orderB) return orderA - orderB
+    return categories[a].label.localeCompare(categories[b].label, 'vi')
+  })
 }
 
-export const CATEGORIES: Record<CategoryId, CategoryConfig> = {
-  phim: {
-    label: 'Phim',
-    subcategories: ['Anime', 'HH3D', 'Phim lẻ', 'Series', 'Tài liệu', 'Khác'],
-  },
-  truyen: {
-    label: 'Truyện',
-    subcategories: ['Manga', 'Light novel', 'Manhua', 'Manhwa', 'Web novel', 'Khác'],
-  },
-  game: {
-    label: 'Game',
-    subcategories: ['PC', 'Mobile', 'Console', 'Khác'],
-  },
-  khac: {
-    label: 'Khác',
-    subcategories: ['Khác'],
-  },
-}
-
-export const CATEGORY_IDS = Object.keys(CATEGORIES) as CategoryId[]
-
-export function getCategoryLabel(id: CategoryId | ''): string {
+export function getCategoryLabel(
+  id: string,
+  categories: CategoriesMap,
+): string {
   if (!id) return ''
-  return CATEGORIES[id]?.label ?? id
+  return categories[id]?.label ?? id
 }
 
-export function isCategoryId(value: string): value is CategoryId {
-  return value in CATEGORIES
+export function getSubcategories(
+  categoryId: string,
+  categories: CategoriesMap,
+): string[] {
+  return categories[categoryId]?.subcategories ?? []
+}
+
+export function parseCategoryDoc(
+  data: Record<string, unknown>,
+): { label: string; subcategories: string[]; order?: number } | null {
+  const label = typeof data.label === 'string' ? data.label.trim() : ''
+  if (!label) return null
+
+  const subcategories = Array.isArray(data.subcategories)
+    ? data.subcategories.map((item) => String(item).trim()).filter(Boolean)
+    : []
+
+  const order = typeof data.order === 'number' ? data.order : undefined
+
+  return { label, subcategories, order }
 }

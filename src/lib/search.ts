@@ -1,11 +1,11 @@
 import Fuse from 'fuse.js'
 import { getCategoryLabel } from './categories'
-import type { CategoryId } from './categories'
+import type { CategoriesMap } from '../types/category'
 import type { Note } from '../types/note'
 
 export interface NoteFilters {
   searchQuery: string
-  category: CategoryId | ''
+  category: string
   subcategory: string
   hashtag: string
 }
@@ -58,7 +58,11 @@ export function parseNaturalQuery(query: string): string[] {
   return expandKeywords(tokens)
 }
 
-export function searchNotes(notes: Note[], query: string): Note[] {
+export function searchNotes(
+  notes: Note[],
+  query: string,
+  categories: CategoriesMap = {},
+): Note[] {
   const trimmed = query.trim()
   if (!trimmed) return notes
 
@@ -74,7 +78,7 @@ export function searchNotes(notes: Note[], query: string): Note[] {
       {
         name: 'category',
         weight: 0.05,
-        getFn: (note) => getCategoryLabel(note.category),
+        getFn: (note) => getCategoryLabel(note.category, categories),
       },
     ],
     threshold: 0.4,
@@ -121,8 +125,12 @@ export function searchNotes(notes: Note[], query: string): Note[] {
     .map((entry) => entry.note)
 }
 
-export function filterNotes(notes: Note[], filters: NoteFilters): Note[] {
-  let result = searchNotes(notes, filters.searchQuery)
+export function filterNotes(
+  notes: Note[],
+  filters: NoteFilters,
+  categories: CategoriesMap = {},
+): Note[] {
+  let result = searchNotes(notes, filters.searchQuery, categories)
 
   if (filters.category) {
     result = result.filter((note) => note.category === filters.category)

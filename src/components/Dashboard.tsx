@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import type { User } from 'firebase/auth'
+import { useCategoriesContext } from '../contexts/CategoriesContext'
 import { useNotes } from '../hooks/useNotes'
 import { useAuth } from '../hooks/useAuth'
-import { CATEGORIES, type CategoryId } from '../lib/categories'
+import { getSubcategories } from '../lib/categories'
 import { filterNotes } from '../lib/search'
 import { noteToCloneDraft } from '../lib/note'
 import type { Note, NoteInput } from '../types/note'
@@ -14,8 +15,14 @@ import { NoteFormModal } from './NoteFormModal'
 export function Dashboard({ user }: { user: User }) {
   const { logout } = useAuth()
   const { notes, loading, error, addNote, updateNote, removeNote } = useNotes(user)
+  const {
+    categories,
+    categoryIds,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useCategoriesContext()
   const [searchQuery, setSearchQuery] = useState('')
-  const [category, setCategory] = useState<CategoryId | ''>('')
+  const [category, setCategory] = useState('')
   const [subcategory, setSubcategory] = useState('')
   const [hashtag, setHashtag] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
@@ -24,8 +31,8 @@ export function Dashboard({ user }: { user: User }) {
 
   const subcategoryOptions = useMemo(() => {
     if (!category) return []
-    return CATEGORIES[category].subcategories
-  }, [category])
+    return getSubcategories(category, categories)
+  }, [category, categories])
 
   const hashtagOptions = useMemo(() => {
     const counts = new Map<string, number>()
@@ -40,11 +47,11 @@ export function Dashboard({ user }: { user: User }) {
   }, [notes])
 
   const filteredNotes = useMemo(
-    () => filterNotes(notes, { searchQuery, category, subcategory, hashtag }),
-    [notes, searchQuery, category, subcategory, hashtag],
+    () => filterNotes(notes, { searchQuery, category, subcategory, hashtag }, categories),
+    [notes, searchQuery, category, subcategory, hashtag, categories],
   )
 
-  const handleCategoryChange = (next: CategoryId | '') => {
+  const handleCategoryChange = (next: string) => {
     setCategory(next)
     setSubcategory('')
   }
@@ -87,6 +94,8 @@ export function Dashboard({ user }: { user: User }) {
     }
   }
 
+  const dataError = error ?? categoriesError
+
   return (
     <div className="app">
       <header className="header">
@@ -103,10 +112,10 @@ export function Dashboard({ user }: { user: User }) {
       </header>
 
       <main className="main">
-        {error && (
+        {dataError && (
           <div className="error-banner" role="alert">
             <strong>Không kết nối được dữ liệu</strong>
-            <p>{error}</p>
+            <p>{dataError}</p>
           </div>
         )}
 
@@ -126,10 +135,19 @@ export function Dashboard({ user }: { user: User }) {
           </p>
         </section>
 
+        {!categoriesLoading && categoryIds.length === 0 && (
+          <div className="error-banner" role="status">
+            <strong>Chưa có danh mục</strong>
+            <p>Admin cần thêm collection <code>categories</code> trên Firebase Console.</p>
+          </div>
+        )}
+
         <FilterBar
           category={category}
           subcategory={subcategory}
           hashtag={hashtag}
+          categoryIds={categoryIds}
+          categories={categories}
           subcategoryOptions={subcategoryOptions}
           hashtagOptions={hashtagOptions}
           onCategoryChange={handleCategoryChange}
@@ -144,12 +162,17 @@ export function Dashboard({ user }: { user: User }) {
               ? `${filteredNotes.length} kết quả`
               : `${notes.length} ghi chú`}
           </h2>
-          <button type="button" className="btn btn-primary" onClick={openCreate}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={openCreate}
+            disabled={categoriesLoading || categoryIds.length === 0}
+          >
             + Ghi chú mới
           </button>
         </div>
 
-        {loading ? (
+        {loading || categoriesLoading ? (
           <div className="empty-state">
             <div className="spinner" style={{ margin: '0 auto' }} />
           </div>
@@ -182,6 +205,8 @@ export function Dashboard({ user }: { user: User }) {
         <NoteFormModal
           note={editingNote}
           draft={cloneDraft}
+          categories={categories}
+          categoryIds={categoryIds}
           onClose={closeModal}
           onSave={handleSave}
         />
