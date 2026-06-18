@@ -29,7 +29,7 @@ function AppWithAuth() {
   }
 
   return (
-    <CategoriesProvider>
+    <CategoriesProvider user={user}>
       <Dashboard user={user} />
     </CategoriesProvider>
   )

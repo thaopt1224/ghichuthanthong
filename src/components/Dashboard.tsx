@@ -18,6 +18,8 @@ export function Dashboard({ user }: { user: User }) {
   const {
     categories,
     categoryIds,
+    rawDocCount,
+    invalidDocCount,
     loading: categoriesLoading,
     error: categoriesError,
   } = useCategoriesContext()
@@ -138,7 +140,19 @@ export function Dashboard({ user }: { user: User }) {
         {!categoriesLoading && categoryIds.length === 0 && (
           <div className="error-banner" role="status">
             <strong>Chưa có danh mục</strong>
-            <p>Admin cần thêm collection <code>categories</code> trên Firebase Console.</p>
+            {invalidDocCount > 0 ? (
+              <p>
+                Firestore có {rawDocCount} document trong <code>categories</code> nhưng
+                không đọc được — mỗi document cần field <code>label</code> (string) và
+                tuỳ chọn <code>subcategories</code> (array).
+              </p>
+            ) : (
+              <p>
+                Thêm collection <code>categories</code> trên Firebase Console (Firestore,
+                không phải Realtime Database). Mỗi document cần field{' '}
+                <code>label</code> (string).
+              </p>
+            )}
           </div>
         )}
 

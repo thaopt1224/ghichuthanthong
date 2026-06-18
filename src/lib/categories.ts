@@ -24,17 +24,53 @@ export function getSubcategories(
   return categories[categoryId]?.subcategories ?? []
 }
 
+function readString(value: unknown): string {
+  if (typeof value === 'string') return value.trim()
+  return ''
+}
+
+function readSubcategories(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean)
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/[,;|]/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+  if (value && typeof value === 'object') {
+    return Object.values(value as Record<string, unknown>)
+      .map((item) => String(item).trim())
+      .filter(Boolean)
+  }
+  return []
+}
+
+function readOrder(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const parsed = Number(value.trim())
+    if (Number.isFinite(parsed)) return parsed
+  }
+  return undefined
+}
+
 export function parseCategoryDoc(
   data: Record<string, unknown>,
 ): { label: string; subcategories: string[]; order?: number } | null {
-  const label = typeof data.label === 'string' ? data.label.trim() : ''
+  const label =
+    readString(data.label) ||
+    readString(data.name) ||
+    readString(data.title)
+
   if (!label) return null
 
-  const subcategories = Array.isArray(data.subcategories)
-    ? data.subcategories.map((item) => String(item).trim()).filter(Boolean)
-    : []
+  const subcategories = readSubcategories(
+    data.subcategories ?? data.subCategories ?? data.types ?? data.loai,
+  )
 
-  const order = typeof data.order === 'number' ? data.order : undefined
+  const order = readOrder(data.order)
 
   return { label, subcategories, order }
 }
