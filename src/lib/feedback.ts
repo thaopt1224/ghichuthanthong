@@ -1,4 +1,4 @@
-export const FEEDBACK_EMAIL = 'thaopt.1224@gmail.com'
+export const FEEDBACK_EMAIL = 'quannhotuongphung@gmail.com'
 
 export function buildFeedbackMailtoUrl(
   message: string,
