@@ -1,4 +1,4 @@
-# Ghi Chú Thần Thông
+# Vô Hạn Ghi Chú
 
 Web app lưu lại những điều thú vị bạn gặp — tập phim, chương truyện, link hay, và ghi chú cá nhân.
 

@@ -50,7 +50,7 @@ export function AuthPage() {
       <div className="auth-card">
         <div className="auth-logo">
           <Logo size={52} />
-          <h1>Ghi Chú Thần Thông</h1>
+          <h1>Vô Hạn Ghi Chú</h1>
           <p>Lưu lại những điều thú vị bạn gặp</p>
         </div>
 

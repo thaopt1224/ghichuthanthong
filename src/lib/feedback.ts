@@ -4,7 +4,7 @@ export function buildFeedbackMailtoUrl(
   message: string,
   options?: { replyEmail?: string; userEmail?: string },
 ): string {
-  const subject = encodeURIComponent('Ghi Chú Thần Thông — Feedback')
+  const subject = encodeURIComponent('Vô Hạn Ghi Chú — Feedback')
   const lines = [message.trim()]
 
   if (options?.replyEmail?.trim()) {

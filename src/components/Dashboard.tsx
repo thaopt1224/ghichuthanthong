@@ -103,7 +103,7 @@ export function Dashboard({ user }: { user: User }) {
       <header className="header">
         <div className="header-brand">
           <Logo size={24} />
-          <h1>Ghi Chú Thần Thông</h1>
+          <h1>Vô Hạn Ghi Chú</h1>
         </div>
         <div className="header-user">
           <span>{user.email}</span>
